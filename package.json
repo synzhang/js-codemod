@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/synzhang/js-codemod/issues"
   },
-  "homepage": "https://github.com/synzhang/js-codemod#readme"
+  "homepage": "https://github.com/synzhang/js-codemod#readme",
+  "devDependencies": {
+    "@types/jscodeshift": "^0.11.6",
+    "jscodeshift": "^0.14.0"
+  }
 }
