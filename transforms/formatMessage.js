@@ -58,5 +58,8 @@ module.exports = function transformer (file, api) {
       }
     })
 
-  return $j.toSource({ quote: 'single' })
+  return $j.toSource({
+    quote: 'single',
+    trailingComma: true,
+  })
 }
