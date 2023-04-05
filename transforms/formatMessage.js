@@ -1,3 +1,5 @@
+const { generateKey } = require('../utils')
+
 export default function transformer (file, api) {
   const j = api.jscodeshift
   const $j = j(file.source)
@@ -16,7 +18,7 @@ export default function transformer (file, api) {
         path.parentPath?.node?.property?.name === 'format'
 
       const idLiteral = path.value.arguments[0].value
-      const newIdLiteral = idLiteral.replace(LOCALE_KEY_REGEX, '_')
+      const newIdLiteral = generateKey(idLiteral)
 
       if (hasChainedFormatCall) {
         const params = path.parentPath?.parentPath?.value?.arguments

@@ -1,10 +1,6 @@
 const path = require('path')
 const fsPromises = require('fs/promises')
-const { LOCALE_KEY_REGEX } = require('../utils')
-
-const generateKey = (key) => (
-  key.replace(LOCALE_KEY_REGEX, '_').toLowerCase()
-)
+const { generateKey } = require('../utils')
 
 const transform = (json) => {
   const { en, cn } = Object.entries(json)
