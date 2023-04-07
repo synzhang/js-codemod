@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
-    "generate:localeFiles": "node ./scripts/generateLocaleFiles"
+    "generate:localeFiles": "node ./scripts/generateLocaleFiles",
+    "codemod:formatMessage": "jscodeshift -t ./transforms/formatMessage.js --parser tsx ./src --extensions=js,jsx,ts,tsx"
   },
   "repository": {
     "type": "git",
