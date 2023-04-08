@@ -7,7 +7,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "generate:localeFiles": "node ./scripts/generateLocaleFiles",
-    "codemod:formatMessage": "jscodeshift -t ./transforms/formatMessage.js --parser tsx ./src --extensions=js,jsx,ts,tsx"
+    "codemod:formatMessage": "jscodeshift -t ./transforms/formatMessage.js --parser tsx ./front --extensions=js,jsx,ts,tsx",
+    "postcodemod": "prettier --write $(git diff --name-only)"
   },
   "repository": {
     "type": "git",
