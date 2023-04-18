@@ -11,6 +11,10 @@ module.exports = function transformer (file, api) {
       }
     })
     .forEach(path => {
+      const isTransformed = path?.node?.arguments?.[0]?.type === 'ObjectExpression'
+
+      if (isTransformed) return
+
       const hasChainedFormatCall =
         path.parentPath?.parentPath?.node?.type === 'CallExpression' &&
         !!path.parentPath?.parentPath?.node?.arguments?.length &&
