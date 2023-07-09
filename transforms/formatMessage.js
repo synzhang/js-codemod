@@ -23,26 +23,36 @@ module.exports = function transformer (file, api) {
 
       const idLiteral = path.value.arguments[0].value
       const newIdLiteral = generateKey(idLiteral)
+      // keep transformed object literals in one line to
+      // avoid some coding style problems
+      const printOptions = {
+        lineTerminator: '',
+        quote: 'single',
+        tabWidth: 0,
+      }
 
       if (hasChainedFormatCall) {
         // handle `__('Hello {0}').format('World')`
         const params = path.parentPath?.parentPath?.value?.arguments
-
-        path.parentPath.parentPath.replace(j.callExpression(j.identifier('formatMessage'), [
+        const node = j.callExpression(j.identifier('formatMessage'), [
           j.objectExpression([
-            j.property('init', j.identifier('id'), j.stringLiteral(newIdLiteral))
+            j.property('init', j.identifier('id'), j.stringLiteral(newIdLiteral)),
           ]),
           j.objectExpression(params.map((param, index) => (
             j.property('init', j.identifier(index.toString()), param)
-          )))
-        ]))
+          ))),
+        ])
+
+        path.parentPath.parentPath.replace(j(node).toSource(printOptions))
       } else {
         // handle `__('Hello')
-        path.replace(j.callExpression(j.identifier('formatMessage'), [
+        const node = j.callExpression(j.identifier('formatMessage'), [
           j.objectExpression([
-            j.property('init', j.identifier('id'), j.stringLiteral(newIdLiteral))
+            j.property('init', j.identifier('id'), j.stringLiteral(newIdLiteral)),
           ]),
-        ]))
+        ])
+
+        path.replace(j(node).toSource(printOptions))
       }
 
       // add `import formatMessage from 'util/formatMessage'` import statement
