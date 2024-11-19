@@ -3,6 +3,7 @@ const { generateKey } = require('../utils')
 module.exports = function transformer (file, api) {
   const j = api.jscodeshift
   const $j = j(file.source)
+  let hasChanges = false
 
   $j
     .find(j.CallExpression, {
@@ -23,8 +24,6 @@ module.exports = function transformer (file, api) {
 
       const idLiteral = path.value.arguments[0].value
       const newIdLiteral = generateKey(idLiteral)
-      // keep transformed object literals in one line to
-      // avoid some coding style problems
       const printOptions = {
         lineTerminator: '',
         quote: 'single',
@@ -38,8 +37,17 @@ module.exports = function transformer (file, api) {
           j.objectExpression([
             j.property('init', j.identifier('id'), j.stringLiteral(newIdLiteral)),
           ]),
-          j.objectExpression(params.map((param, index) => (
-            j.property('init', j.identifier(index.toString()), param)
+          j.objectExpression(params.map((param, index) => j.property(
+            'init',
+            j.identifier(index.toString()),
+            // handle `__('Hello {0}').format(__('World'))`
+            param.type === 'CallExpression' && param.callee.name === '__'
+              ? j.callExpression(j.identifier('__'), [
+                  j.objectExpression([
+                    j.property('init', j.identifier('id'), j.stringLiteral(generateKey(param.arguments[0].value))),
+                  ]),
+                ])
+              : param,
           ))),
         ])
 
@@ -70,10 +78,14 @@ module.exports = function transformer (file, api) {
 
         $j.get().node.program.body.unshift(newFormatMessageImportDeclaration)
       }
+
+      hasChanges = true
     })
 
-  return $j.toSource({
-    quote: 'single',
-    trailingComma: true,
-  })
+  return hasChanges
+    ? $j.toSource({
+      quote: 'single',
+      trailingComma: true,
+    })
+    : file.source
 }
